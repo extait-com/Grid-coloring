@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the commercial license
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category Extait
+ * @package Extait_Highlighter
+ * @copyright Copyright (c) 2016-2018 Extait, Inc. (http://www.extait.com)
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="extait" translate="label" sortOrder="550">
+            <label>Extait Modules</label>
+        </tab>
+        <section id="extait_highlighter" translate="label"
+                 sortOrder="200" showInDefault="1" showInStore="0" showInWebsite="0">
+            <class>separator-top</class>
+            <label>Grid Colouring</label>
+            <tab>extait</tab>
+            <resource>Extait_Highlighter::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="0">
+                <label>General settings</label>
+                <field id="module_status" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInStore="0" showInWebsite="0">
+                    <label>Module Status</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="row_colors" translate="label" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Colors</label>
+                    <frontend_model>Extait\Highlighter\Block\Adminhtml\System\Config\Form\Field\StatusColor</frontend_model>
+                    <backend_model>Extait\Highlighter\Model\Adminhtml\System\Config\StatusColor</backend_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

@@ -1,0 +1,138 @@
+<?php
+/**
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the commercial license
+ * that is bundled with this package in the file LICENSE.txt.
+ *
+ * @category Extait
+ * @package Extait_Highlighter
+ * @copyright Copyright (c) 2016-2018 Extait, Inc. (http://www.extait.com)
+ */
+
+// @codingStandardsIgnoreFile
+/** @var Extait\Highlighter\Block\Adminhtml\System\Config\Form\Field\StatusColor $block*/
+?>
+
+<?php
+$htmlId = $block->getHtmlId() ? $block->getHtmlId() : '_' . uniqid();
+$colspan = $block->isAddAfter() ? 2 : 1;
+?>
+
+<div class="design_theme_ua_regexp" id="grid<?= /* @escapeNotVerified */ $htmlId ?>">
+    <div class="admin__control-table-wrapper">
+        <table class="admin__control-table" id="<?= /* @escapeNotVerified */ $block->getElement()->getId() ?>">
+            <thead>
+            <tr>
+                <?php foreach ($block->getColumns() as $columnName => $column): ?>
+                    <th><?= /* @escapeNotVerified */ $column['label'] ?></th>
+                <?php endforeach;?>
+            </tr>
+            </thead>
+            <tbody id="addRow<?= /* @escapeNotVerified */ $htmlId ?>">
+            </tbody>
+        </table>
+    </div>
+    <input type="hidden" name="<?= /* @escapeNotVerified */ $block->getElement()->getName() ?>[__empty]" value="" />
+
+    <script>
+        require([
+            'mage/template',
+            'jquery/colorpicker/js/colorpicker',
+            'prototype'
+        ], function (mageTemplate, colorPicker) {
+            // create row creator
+            window.arrayRow<?= /* @escapeNotVerified */ $htmlId ?> = {
+
+                // define row prototypeJS template
+                template: mageTemplate(
+                    '<tr id="<%- _id %>">'
+                    <?php foreach ($block->getColumns() as $columnName => $column): ?>
+                        + '<td><?= /* @escapeNotVerified */ $block->renderCellTemplate($columnName) ?><\/td>'
+                    <?php endforeach; ?>
+                    + '<\/tr>'
+                ),
+
+                add: function(rowData, insertAfterId) {
+                    // generate default template data
+                    var templateValues;
+
+                    // Prepare template values
+                    if (rowData) {
+                        templateValues = rowData;
+                    } else {
+                        var d = new Date();
+                        templateValues = {
+                            <?php foreach ($block->getColumns() as $columnName => $column): ?>
+                                <?= /* @escapeNotVerified */ $columnName ?>: '',
+                                'option_extra_attrs': {},
+                            <?php endforeach; ?>
+                            _id: '_' + d.getTime() + '_' + d.getMilliseconds()
+                        };
+                    }
+
+                    // Insert new row after specified row or at the bottom
+                    if (insertAfterId) {
+                        Element.insert($(insertAfterId), {after: this.template(templateValues)});
+                    } else {
+                        Element.insert($('addRow<?= /* @escapeNotVerified */ $htmlId ?>'), {bottom: this.template(templateValues)});
+                    }
+
+                    // Fill controls with data
+                    if (rowData) {
+                        var rowInputElementNames = Object.keys(rowData.column_values);
+                        for (var i = 0; i < rowInputElementNames.length; i++) {
+                            if ($(rowInputElementNames[i])) {
+                                $(rowInputElementNames[i]).setValue(rowData.column_values[rowInputElementNames[i]]);
+                            }
+                        }
+                    }
+
+                    //apply ColorPicker
+                    var interval = setInterval(function () {
+                        var elBack = jQuery('#' + rowData.status + '_back_color'),
+                            elText = jQuery('#' + rowData.status + '_text_color'),
+                            elStatus = jQuery('#' + rowData.status + '_status');
+                        if (elBack.length && elText.length && elStatus.length) {
+                            elStatus
+                                .attr('readonly', 'readonly')
+                                .css('opacity', '1');
+
+                            elBack
+                                .attr('readonly', 'readonly')
+                                .css('opacity', '1')
+                                .css('cursor', 'default')
+                                .css("backgroundColor", rowData.back_color)
+                                .ColorPicker({
+                                    color: rowData.back_color,
+                                    onChange: function (hsb, hex, rgb) {
+                                        elBack.css("backgroundColor", "#" + hex).val("#" + hex);
+                                    }
+                                });
+
+                            elText
+                                .attr('readonly', 'readonly')
+                                .css('opacity', '1')
+                                .css('cursor', 'default')
+                                .css("backgroundColor", rowData.text_color)
+                                .ColorPicker({
+                                    color: rowData.text_color,
+                                    onChange: function (hsb, hex, rgb) {
+                                        elText.css("backgroundColor", "#" + hex).val("#" + hex);
+                                    }
+                                });
+                            clearInterval(interval);
+                        }
+                    }, 500);
+                }
+            };
+
+            // add existing rows
+            <?php
+                foreach ($block->getArrayRows() as $_rowId => $_row) {
+                    /* @escapeNotVerified */ echo "arrayRow{$htmlId}.add(" . $_row->toJson() . ");\n";
+                }
+            ?>
+        });
+    </script>
+</div>
