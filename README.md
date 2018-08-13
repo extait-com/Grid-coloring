@@ -1,4 +1,4 @@
-Grid Colouring
+# Grid Colouring
 
 Grid Colouring allows highlighting orders according to their status by colouring them. Along with the opportunity to select preferable background colour, you can change text colour too. Moreover, Grid Colouring is so easy to use that it doesn’t take a lot of time to sort out the possibilities that it provides.
 
